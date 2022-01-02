@@ -7,7 +7,7 @@ rus_alphabet = ['а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к'
 mod = len(rus_alphabet)
 
 pop_bi_rus = ["ст", "но", "то", "на", "ен"]
-pop_bi_text = ['фт', 'йо', 'дт', 'шж', 'ют']
+pop_bi_text = ['фт', 'йо', 'дт', 'шж', 'дж'] 
 
 #форматуємо текст
 def alter_text():
@@ -115,6 +115,8 @@ def text_check(all_txt):
         if not any(txt.find("оо"), txt.find("аь"), txt.find("оь"), txt.find("юь"), txt.find("эь")):
             final_txt.append(txt)
 
+    print(final_txt)
+
 #дешифровка
 def txt_decrypt(altered_text, keys):
     key_a = int(keys[0])
@@ -126,7 +128,7 @@ def txt_decrypt(altered_text, keys):
         temp = (reverse_element(key_a, pow(mod, 2)) * (bi_convert(altered_text[i:i+2]) - key_b)) % pow(mod, 2)
         decrypted.append(rus_alphabet[temp // mod] + rus_alphabet[temp % mod])
 
-    return ''.join()
+    return ''.join(letter for letter in decrypted)
 
 
 def main():
@@ -138,9 +140,14 @@ def main():
     pop_bi_text = list(sorted_dict)[:5]
     print(pop_bi_text)
 
+    all_txt = []
+
     grp = bi_group(my_text)
     keys = keys_group(grp)
-    print(keys)
+    for i in keys:
+        all_txt.append(txt_decrypt(my_text, i))
+    
+    text_check(all_txt)
    
 
 if __name__ == "__main__":
