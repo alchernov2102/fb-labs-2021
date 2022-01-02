@@ -26,7 +26,7 @@ def reverse_element(a, n):
        
 #розв'язування лінійних порівнянь
 def linear_comparsion(a, b, n):
-
+    
     #масив усіх розв'язків
     all_solutions = []  
     
@@ -52,4 +52,10 @@ def linear_comparsion(a, b, n):
           
           return all_solutions        
 
+def main():
 
+    print(linear_comparsion(93, 93, 1089))
+    
+
+if __name__ == "__main__":
+    main()
