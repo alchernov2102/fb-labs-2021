@@ -3,7 +3,7 @@ import random
 
 key_length = 256
 
-#розширений алгоритм Евкліда g-НСД
+#розширений алгоритм Евкліда 
 def calculate_GCD(a, b):
 
     if (a == 0):
@@ -98,10 +98,10 @@ def generate_random_key(key_length):
             return my_key
             
 
-var_q = 91020714455297308973390619582600842997726535405579825765201226774219635852939
-var_p = 104576276447658008256557839449428297010151568638787218098866322818644888285903
-var_q1 = 110902468790912915858012174720853363541948126252774950997945903895992984067579
-var_p1 = 62373675425845803064655323226345885192810191935839861456488214046498405857339
+var_q = 178658293926135350700920903979336738587095191539795651452453458168024038066993
+var_p = 278254034557349701170736144331736945666227895345976837499171901170822344402849
+var_q1 = 76372103711763912577011713974872193706501899482824593053130169929661142963293
+var_p1 = 203383915170499312103832799543620348968177648113589717632697842086025763303371
 
 
 
@@ -123,7 +123,7 @@ def generate_random_pairs(var_p, var_q):
 
     while True:
 
-        var_e = random.randrange(2**(key_length - 1), 2 ** (key_length))
+        var_e = random.randint(2, var_euler - 1)
         if calculate_GCD(var_e, var_euler)[0] == 1:
             break
     
@@ -134,35 +134,79 @@ def generate_random_pairs(var_p, var_q):
     pub_key = (var_n, var_e)
     sec_key =  var_d
 
-    print("PUBLIC KEY:", pub_key, "\n")
-    print("PRIVATE KEY:", sec_key, "\n")
+    #print("PUBLIC KEY:", pub_key, "\n")
+    #print("PRIVATE KEY:", sec_key, "\n")
+
+    return sec_key, pub_key 
     
 
-def rsa_encrypt(message, var_e, var_n):
+def rsa_encrypt(message, public_key):
+
+    var_n = public_key[0]
+    var_e = public_key[1]
 
     encrypted = pow(message, var_e, var_n)
 
     return encrypted
 
-def rsa_decrypt(encrypted, var_d, var_n):
+def rsa_decrypt(encrypted, public_key, private_key):
 
-    message = pow(encrypted, var_d, var_n)
+    message = pow(encrypted, private_key, public_key[0])
     return message
 
-def rsa_sign(message, var_d, var_n):
-    signed = pow(message, var_d, var_n)
+def rsa_sign(message, private_key, public_key):
+    signed = pow(message, private_key, public_key[0])
     return signed
 
-def rsa_verify(message, signed, var_e, var_n):
-    if message == pow(signed, var_e, var_n):
+def rsa_verify(message, signed, public_key):
+    if message == pow(signed, public_key[1], public_key[0]):
         return True
 
+#TODO receive key
+def rsa_receive_key(encrypted, encrypt_signed, private_key, public_key1, public_key2):
+
+    message = rsa_decrypt(encrypted, public_key1, private_key)
+    decrypt_signed = rsa_decrypt(encrypt_signed, public_key1, private_key)
+    exchange_ver = rsa_verify(message, decrypt_signed, public_key2)
+    print("Received!")
+
+    return message, exchange_ver
+
+
+#TODO send key
+def rsa_send_key(message, secret_k, public_key1, public_key2 ):
+    encrypted = rsa_encrypt(message, public_key1)
+    signed = rsa_sign(message, secret_k, public_key2)
+    encypt_signed = rsa_encrypt(signed, public_key1)
+    print("Was sent!")
+    return encrypted, encypt_signed
 
 
 
+#driver code
+
+#згенеруємо дві пари ключів 
+private_key1 = generate_random_pairs(var_p, var_q)[0]
+public_key1 = generate_random_pairs(var_p, var_q)[1]
+private_key2 = generate_random_pairs(var_p1, var_q1)[0]
+public_key2 = generate_random_pairs(var_p1, var_q1)[1]
+
+print(f'Private key 1: {private_key1} \n Public key 1  {public_key1} \n Private key 2: {private_key2} \n Public key 2: {public_key2} \n')
+
+
+#реалізуємо обмін ключів
+
+my_message = random.randint(1, 2 ** 255)
+print('MY MESSAGE: ', my_message)
+
+encrypted_msg, encrypted_sgn = rsa_send_key(my_message, private_key1, public_key2, public_key1)
+
+print(encrypted_msg, encrypted_sgn)
+
+message, verified = rsa_receive_key(encrypted_msg, encrypted_sgn, private_key2, public_key2, public_key1 )
+print('Decrypted message: ', message)
 
  
-
 
     
    
