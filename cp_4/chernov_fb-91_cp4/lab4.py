@@ -1,5 +1,5 @@
 import random
-from telnetlib import ENCRYPT
+
 
 key_length = 256
 
