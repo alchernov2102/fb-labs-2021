@@ -162,24 +162,27 @@ def rsa_verify(message, signed, public_key):
     if message == pow(signed, public_key[1], public_key[0]):
         return True
 
-#TODO receive key
-def rsa_receive_key(encrypted, encrypt_signed, private_key, public_key1, public_key2):
-
-    message = rsa_decrypt(encrypted, public_key1, private_key)
-    decrypt_signed = rsa_decrypt(encrypt_signed, public_key1, private_key)
-    exchange_ver = rsa_verify(message, decrypt_signed, public_key2)
-    print("Received!")
-
-    return message, exchange_ver
 
 
-#TODO send key
-def rsa_send_key(message, secret_k, public_key1, public_key2 ):
-    encrypted = rsa_encrypt(message, public_key1)
-    signed = rsa_sign(message, secret_k, public_key2)
-    encypt_signed = rsa_encrypt(signed, public_key1)
-    print("Was sent!")
-    return encrypted, encypt_signed
+def rsa_send_key(message, var_e1, var_n1, var_d, var_n): #e1, n1 - значення для абонента B, n, e - значення для абонента А
+
+    enc_msg = pow(message, var_e1, var_n1)
+    sign = pow(message, var_d, var_n)
+    sign1 = pow(sign, var_e1, var_n1)
+    return enc_msg, sign, sign1
+    
+
+def rsa_receive_key(enc_msg, sign1, var_d1, var_n1, sign, var_e, var_n):
+
+    dec_msg = pow(enc_msg, var_d1, var_n1)
+    sign = pow(sign1, var_d1, var_n1)
+
+    if dec_msg == pow(sign, var_e, var_n):
+        print("Verified!")
+        return msg, sign
+
+
+
 
 
 
@@ -197,19 +200,22 @@ print(f'Private key 1: {private_key1} \n Public key 1  {public_key1} \n Private 
 #реалізуємо обмін ключів
 
 my_message = random.randint(1, 2 ** 255)
-print('MY MESSAGE: ', my_message)
 
-encrypted_msg, encrypted_sgn = rsa_send_key(my_message, private_key1, public_key2, public_key1)
 
-print(encrypted_msg, encrypted_sgn)
+msg, sign, sign1 = rsa_send_key(my_message, public_key2[1], public_key2[0], private_key1, private_key1)
+print("A sent message to B! \n")
+print("Message: ", my_message)
+print("Sign - ", sign1)
 
-message, verified = rsa_receive_key(encrypted_msg, encrypted_sgn, private_key2, public_key2, public_key1 )
-print('Decrypted message: ', message)
+rsa_receive_key(msg, sign1, private_key2, public_key2[0], sign, public_key1[1], public_key1[0])
 
- 
 
-    
+k1, s1, s = rsa_send_key(my_message, int("10001", 16), int("8238040E6117E2FE497C09126DA1F7561C262B909C63EA5C3422913DB0365A89", 16), private_key1, public_key1[0])    
    
+
+print("k1 = ",hex(k1))
+print("s1 = ",hex(s1))
+print("s = ",hex(s))
 
     
 
