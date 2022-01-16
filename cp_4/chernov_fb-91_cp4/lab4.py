@@ -210,12 +210,7 @@ print("Sign - ", sign1)
 rsa_receive_key(msg, sign1, private_key2, public_key2[0], sign, public_key1[1], public_key1[0])
 
 
-k1, s1, s = rsa_send_key(my_message, int("10001", 16), int("8238040E6117E2FE497C09126DA1F7561C262B909C63EA5C3422913DB0365A89", 16), private_key1, public_key1[0])    
-   
 
-print("k1 = ",hex(k1))
-print("s1 = ",hex(s1))
-print("s = ",hex(s))
 
     
 
